@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   createBoard();
+  let colourBeingDragged;
+  let colourBeingReplaced;
+  let squaresIdBeingDragged;
+  let squareIdBeingReplaced;
+
 
   // Drag the Candies
   squares.forEach(square => square.addEventListener('dragstart', dragStart));
@@ -44,14 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
   squares.forEach(square => square.addEventListener('drop', dragDrop));
 
   function dragStart() {
+    colourBeingDragged = this.style.backgroundColor
+    squaresIdBeingDragged = parseInt(this.id)
     console.log(this.id, 'dragstart');
   }
 
-  function dragOver() {
+  function dragOver(e) {
+    e.preventDefault();
     console.log(this.id, 'dragover');
   }
 
-  function dragEnter() {
+  function dragEnter(e) {
+    e.preventDefault();
     console.log(this.id, 'dragenter');
   }
 
@@ -59,14 +68,37 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(this.id, 'dragleave');
   }
 
-  function dragEnd() {
-    console.log(this.id, 'dragend');
-  }
 
   function dragDrop() {
     console.log(this.id, 'dragdrop');
+    colourBeingReplaced = this.style.backgroundColor;
+    squareIdBeingReplaced = parseInt(this.id)
+    this.style.backgroundColor = colourBeingDragged
+    squares[squaresIdBeingDragged].style.backgroundColor = colourBeingReplaced
   }
 
+  function dragEnd() {
+    console.log(this.id, 'dragend');
+    // what is a valid move?
+    let validMoves = [
+      squaresIdBeingDragged - 1,
+      squaresIdBeingDragged - width,
+      squaresIdBeingDragged + 1,
+      squaresIdBeingDragged + width
+    ]
+    let validMove = validMoves.includes(squareIdBeingReplaced)
+
+    if (squareIdBeingReplaced && validMove) {
+      squareIdBeingReplaced = null
+    } else if (squareIdBeingReplaced && !validMove) {
+      squares[squareIdBeingReplaced].style.backgroundColor = colourBeingReplaced
+      squares[squaresIdBeingDragged].style.backgroundColor = colourBeingDragged
+    } else squares[squaresIdBeingDragged].style.backgroundColor = colourBeingDragged
+
+
+
+
+  }
 
 
 
